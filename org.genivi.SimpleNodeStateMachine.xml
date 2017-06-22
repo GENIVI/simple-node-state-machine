@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+    <interface name='org.genivi.SimpleNodeStateMachine'>
+        <method name='Shutdown'>
+            <arg type='u' name='error' direction='out'/>
+        </method>
+    </interface>
+</node>
+
