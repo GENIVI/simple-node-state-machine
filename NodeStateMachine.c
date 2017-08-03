@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 
-static gboolean NSM__handle_shutdown(NodeStateOrgGeniviSimpleNodeStateMachine   *pTestMachine,
+static gboolean NSM__handle_shutdown(NodeStateOrgGeniviSimpleNodeStateMachine   *pStateMachine,
         GDBusMethodInvocation *pInvocation,
         gpointer               pUserData)
 {
@@ -23,50 +23,53 @@ static gboolean NSM__handle_shutdown(NodeStateOrgGeniviSimpleNodeStateMachine   
             sizeof(NsmDataType_NodeState));
 
     if (retVal != NsmErrorStatus_Ok) {
-        log_error() << "Failed to set nsm data " << retVal;
+        g_error("Failed to set nsm data %i", retVal);
     }
 
     return TRUE;
 }
 
 
-static NodeStateOrgGeniviSimpleNodeStateMachine *TSTMSC__pTestMachine = NULL;
-static GDBusConnection *TSTMSC__pConnection  = NULL;
+static NodeStateOrgGeniviSimpleNodeStateMachine *pStateMachine = NULL;
+static GDBusConnection *pConnection  = NULL;
 
 static void on_name_acquired (GDBusConnection *connection,
         const gchar *name,
         gpointer user_data)
 {
-    if(g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(TSTMSC__pTestMachine),
-                TSTMSC__pConnection,
+    if(g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(pStateMachine),
+                pConnection,
                 "/org/genivi/SimpleNodeStateMachine",
                 NULL) == TRUE)
     {
-        (void) g_signal_connect(TSTMSC__pTestMachine, "handle_shutdown",
+        (void) g_signal_connect(pStateMachine, "handle_shutdown",
                 G_CALLBACK(NSM__handle_shutdown),
                 NULL);
     }
     else
     {
-        printf("Failed to export skeleton\n");
+        g_warning("Failed to export skeleton\n");
     }
 }
 
 unsigned char NsmcInit(void)
 {
     GError *gerr = NULL;
+    unsigned char retval = 1;
 
-    printf("NsmcInit\n");
+    g_info("NsmcInit\n");
 
-    TSTMSC__pTestMachine = node_state_org_genivi_simple_node_state_machine_skeleton_new();
-    if (TSTMSC__pTestMachine == NULL)
+    pStateMachine = node_state_org_genivi_simple_node_state_machine_skeleton_new();
+    if (pStateMachine == NULL)
     {
-        g_warning("pTestMachine is Null");
+        g_warning("pStateMachine is Null");
+        retval = 0;
     }
-    TSTMSC__pConnection  = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &gerr);
-    if (TSTMSC__pConnection == NULL)
+    pConnection  = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &gerr);
+    if (pConnection == NULL)
     {
-        printf("pconnection error: %s\n", gerr->message);
+        g_warning("pconnection error: %s\n", gerr->message);
+        retval = 0;
     }
     g_bus_own_name (G_BUS_TYPE_SESSION,
             "org.genivi.SimpleNodeStateMachine",
@@ -78,7 +81,7 @@ unsigned char NsmcInit(void)
             NULL);
 
 
-    return 1;
+    return retval;
 }
 
 
@@ -107,8 +110,8 @@ NsmErrorStatus_e NsmcSetData(NsmDataType_e enData, unsigned char *pData, unsigne
             && (u32DataLen == sizeof(NsmNodeState_e)
             && ((NsmNodeState_e) *pData) == NsmNodeState_Shutdown))
     {
-        g_object_unref(TSTMSC__pConnection);
-        g_object_unref(TSTMSC__pTestMachine);
+        g_object_unref(pConnection);
+        g_object_unref(pStateMachine);
     }
 
     return NsmErrorStatus_Ok;
