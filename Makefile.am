@@ -19,3 +19,6 @@ CLEANFILES    = SimpleNodeStateMachineApi.c \
 SimpleNodeStateMachineApi.c SimpleNodeStateMachineApi.h: org.genivi.SimpleNodeStateMachine.xml
 	gdbus-codegen --interface-prefix org.genivi.SimpleNodeStateMachine. --c-namespace NodeState --generate-c-code SimpleNodeStateMachineApi --annotate "org.genivi.SimpleNodeStateMachine.Shutdown()" org.gtk.GDBus.C.ForceGVariant true $<
 
+dbuspolicy_DATA = org.genivi.SimpleNodeStateMachine.conf
+
+EXTRA_DIST = $(dbuspolicy_DATA)
