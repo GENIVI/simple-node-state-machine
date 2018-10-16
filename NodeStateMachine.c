@@ -65,13 +65,13 @@ unsigned char NsmcInit(void)
         g_warning("pStateMachine is Null");
         retval = 0;
     }
-    pConnection  = g_bus_get_sync(G_BUS_TYPE_SESSION, NULL, &gerr);
+    pConnection  = g_bus_get_sync(G_BUS_TYPE_SYSTEM, NULL, &gerr);
     if (pConnection == NULL)
     {
         g_warning("pconnection error: %s\n", gerr->message);
         retval = 0;
     }
-    g_bus_own_name (G_BUS_TYPE_SESSION,
+    g_bus_own_name (G_BUS_TYPE_SYSTEM,
             "org.genivi.SimpleNodeStateMachine",
             G_BUS_NAME_OWNER_FLAGS_NONE,
             NULL,

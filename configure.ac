@@ -23,6 +23,13 @@ PKG_CHECK_MODULES([IVILogging], [ivi-logging])
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h syslog.h])
 
+# Path to directory for D-Bus policy files.
+AC_ARG_WITH([dbuspolicydir],
+            AC_HELP_STRING([--with-dbuspolicydir=DIR], [D-Bus policy directory]),
+            [dbuspolicydir=${withval}],
+            [dbuspolicydir=$(pkg-config --variable=sysconfdir dbus-1)/dbus-1/system.d])
+AC_SUBST([dbuspolicydir], [${dbuspolicydir}])
+
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
