@@ -17,8 +17,9 @@ AC_PROG_CXX
 AC_PROG_CC
 
 # Checks for libraries.
-PKG_CHECK_MODULES([GLIBMM], [glibmm-2.4 giomm-2.4])
-PKG_CHECK_MODULES([IVILogging], [ivi-logging])
+PKG_CHECK_MODULES([GLIB], [glib-2.0])
+PKG_CHECK_MODULES([GIO], [gio-2.0])
+PKG_CHECK_MODULES([GIO_UNIX], [gio-unix-2.0])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h syslog.h])
